@@ -27,6 +27,7 @@ La guida completa, i benchmark e le note di verifica sono nel
 
 ```bash
 # 1. scarica wheel e checksum dalla release GitHub
+#    (dalla root del clone: fai prima `git clone`)
 gh release download v0.1.0 \
   --repo Bobbinetor/vllm-eagle4-aarch64-gb10 \
   --pattern '*.whl' --pattern 'SHA256SUMS'

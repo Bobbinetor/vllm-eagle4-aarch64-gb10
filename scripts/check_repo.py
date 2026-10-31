@@ -19,6 +19,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -45,14 +46,13 @@ SCHEME_RE = re.compile(r"^(?:[a-zA-Z][a-zA-Z0-9+.-]*:|#|//)")
 
 
 def iter_files():
-    for path in sorted(ROOT.rglob("*")):
-        if not path.is_file():
-            continue
-        if any(part in SKIP_DIRS for part in path.parts):
-            continue
-        if path.suffix in {".whl", ".pyc"}:
-            continue
-        yield path
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS)
+        for name in sorted(filenames):
+            path = Path(dirpath) / name
+            if path.suffix in {".whl", ".pyc"}:
+                continue
+            yield path
 
 
 def check_markdown_links() -> list[str]:

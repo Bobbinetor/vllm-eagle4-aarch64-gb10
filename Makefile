@@ -3,11 +3,12 @@ IMAGE ?= vllm-eagle:gb10
 BASE_URL ?= http://127.0.0.1:8000
 VERSION ?= v0.1.0
 
-.PHONY: help check verify audit image serve smoke bench release-dry release clean
+.PHONY: help check verify verify-static audit image serve smoke bench release-dry release clean
 
 help:
 	@echo "make check        - repo checks: links, sources, checksums, leaks"
-	@echo "make verify       - checksums, wheel tag, static hook audit"
+	@echo "make verify       - checksums, wheel tag, static hook audit (full host check)"
+	@echo "make verify-static- artifact only: checksums + tag + hook audit"
 	@echo "make audit        - static hook audit only"
 	@echo "make image        - build $(IMAGE) from the prebuilt wheel"
 	@echo "make serve        - start the container with the validated profile"
@@ -23,6 +24,9 @@ check:
 
 verify:
 	./scripts/verify.sh
+
+verify-static:
+	./scripts/verify.sh --static
 
 audit:
 	python3 scripts/audit_hooks.py $(WHEEL)

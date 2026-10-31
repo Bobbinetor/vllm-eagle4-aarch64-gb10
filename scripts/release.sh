@@ -151,9 +151,8 @@ release_args=(
 [[ "$DRAFT" -eq 1 ]] && release_args+=(--draft)
 [[ "$DRAFT" -eq 0 ]] && release_args+=(--latest)
 
-printf '\n  gh release create'
-printf ' %q' "${release_args[@]}"
-printf '\n'
+python3 -c 'import shlex, sys; print("\n  " + shlex.join(sys.argv[1:]))' \
+  gh release create "${release_args[@]}"
 
 if [[ "$PUBLISH" -eq 0 ]]; then
   step "Dry run"

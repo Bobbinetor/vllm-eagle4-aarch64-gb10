@@ -1,7 +1,6 @@
 name: Run report
 description: Report a successful or failed run on a DGX Spark / GB10
 title: "[run] <DGX Spark model> — <result>"
-labels: ["run-report"]
 body:
   - type: markdown
     attributes:

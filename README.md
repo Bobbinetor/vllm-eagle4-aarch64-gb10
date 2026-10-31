@@ -81,6 +81,7 @@ The wheel is a release asset. Download it together with the checksum manifest:
 
 ```bash
 # 1. Download the wheel and the checksums from the GitHub Release
+#    (run from the repository root; `git clone` first if you have not)
 gh release download v0.1.0 \
   --repo Bobbinetor/vllm-eagle4-aarch64-gb10 \
   --pattern '*.whl' --pattern 'SHA256SUMS'
@@ -233,7 +234,7 @@ curl -s http://127.0.0.1:8000/v1/chat/completions \
 python3 scripts/audit_hooks.py vllm-0.32.0rc1.dev283+eagle.3-cp312-cp312-linux_aarch64.whl
 ```
 
-This opens the wheel as a zip and checks the exact symbols `eagle-harness` 0.1.4 resolves at load time. It is the fastest way to confirm that a wheel is the patched build and not a stock vLLM.
+This opens the wheel as a zip and checks the exact symbols `eagle-harness` 0.1.4 resolves at load time. It is the fastest way to confirm that a wheel is the patched build and not a stock vLLM. On a machine that is not a DGX Spark, `./scripts/verify.sh --static` runs the checksum and the audit without the host/GPU checks.
 
 ### Release integrity
 

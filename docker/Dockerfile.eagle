@@ -1,0 +1,14 @@
+# Prebuilt-image wrapper for EAGLE-4 on aarch64 / GB10.
+# Build from the repository root, where the wheel lives:
+#   docker build -f docker/Dockerfile.eagle -t vllm-eagle:gb10 .
+FROM vllm/vllm-openai:latest
+
+USER root
+COPY *.whl /tmp/wheels/
+RUN python3 -m pip install --no-cache-dir /tmp/wheels/*.whl \
+ && python3 -m pip install --no-cache-dir "eagle-harness[vllm]" \
+ && rm -rf /tmp/wheels
+
+# Fail the build if the hook surface is missing: a vLLM without the hooks
+# cannot serve EAGLE-4, and a silently broken image is worse than a failed build.
+RUN eagle-harness-check && echo "EAGLE HOOKS OK"

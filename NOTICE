@@ -1,0 +1,53 @@
+# NOTICE
+
+This repository redistributes a modified build of **vLLM**.
+
+## vLLM
+
+- Copyright contributors to the vLLM project.
+- Licensed under the Apache License, Version 2.0. See `licenses/Apache-2.0.txt`.
+- Upstream: https://github.com/vllm-project/vllm
+- This build was produced from https://github.com/eagle-hq/vllm at commit
+  `3ba23801e80d2a0d0a9af21ce94484aa2adb8795` (tag `eagle/v0.1.0`).
+- The fork adds or modifies an out-of-tree speculative-decoding method registry,
+  a method configuration hook, and a GDN tree-verify extension, and it adds
+  hooks to the speculator. It uses the upstream
+  `AttentionBackendEnum.CUSTOM` extension point. Those files carry
+  `SPDX-License-Identifier: Apache-2.0`.
+- The wheel also contains code compiled from the upstream vLLM project. It is a
+  modified build, not the upstream release artifact.
+
+## Bundled third-party components
+
+The wheel's compiled extensions include code from the projects below. Their
+license texts are reproduced in `licenses/`.
+
+| Component | License | Pinned source |
+|---|---|---|
+| FlashAttention (vLLM fork) | BSD-3-Clause | https://github.com/vllm-project/flash-attention/tree/b273a02621d3c94bc747df67204f591b67f38fae |
+| CUTLASS | BSD-3-Clause | https://github.com/NVIDIA/cutlass/tree/62750a2b75c802660e4894434dc55e839f322277 and tag `v4.7.1` |
+| DeepGEMM | MIT | https://github.com/vllm-project/DeepGEMM/tree/a7a927731b109fdfec770df7c2a5be5d7e2216b5 |
+
+This list covers the main pinned components. It is not a complete audit of every
+transitive dependency of the Python environment in which the wheel is installed;
+those dependencies are resolved by pip and keep their own licenses.
+
+## Not included in this repository
+
+- `eagle-harness` — Eagle 4 Source-Available License. Not OSI open source.
+  Installed separately from PyPI. https://github.com/eagle-hq/EAGLE-4
+- `EAGLE-Corp/Qwen3.8-27B-EAGLE4` — EAGLE-4 license. Downloaded separately.
+- `nvidia/Qwen3.8-27B-NVFP4` — Apache-2.0. Downloaded separately.
+
+## Trademarks
+
+EAGLE, EAGLE-4, and EAGLE-Harness are trademarks or claimed trademarks of
+Eagle AI Corp. NVIDIA, DGX, and GB10 are trademarks of NVIDIA Corporation.
+This repository is unofficial and is not affiliated with or endorsed by Eagle
+AI Corp. or NVIDIA. No company logos are used.
+
+## No warranty
+
+The artifact is provided "AS IS", without warranties or conditions of any kind,
+express or implied. See the Apache License, Version 2.0, for the applicable
+disclaimer.

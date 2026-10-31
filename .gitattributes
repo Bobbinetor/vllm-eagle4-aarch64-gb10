@@ -1,0 +1,17 @@
+# Normalize text files so diffs and checksums are stable across platforms.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.whl binary
+*.zip binary
+*.tar binary
+*.gz binary
+
+*.sh text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+Dockerfile* text eol=lf

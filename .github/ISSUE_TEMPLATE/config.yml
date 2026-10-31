@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and run results
+    url: https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/discussions
+    about: Ask a question or share a run in Discussions. Use the Run report form for a structured result.
+  - name: Security issue
+    url: https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/security/advisories/new
+    about: Report a vulnerability privately. Do not open a public issue.
+  - name: EAGLE-4 upstream
+    url: https://github.com/eagle-hq/EAGLE-4
+    about: Bugs in EAGLE-4, eagle-harness, or the official x86_64 build belong upstream.

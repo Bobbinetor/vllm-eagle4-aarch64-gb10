@@ -1,0 +1,60 @@
+name: Bug report
+description: Something is broken in the wheel, the image, or the scripts
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing: run `./scripts/verify.sh` and paste the output. It
+        separates a bad download from a real problem.
+  - type: input
+    id: version
+    attributes:
+      label: Release / wheel version
+      placeholder: "v0.1.0 — vllm-0.32.0rc1.dev283+eagle.3-cp312-cp312-linux_aarch64.whl"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Wheel download / checksum
+        - Docker image build
+        - Model loading / startup
+        - Inference / tool calls / streaming
+        - Benchmark script
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Include the command and the full error. Remove tokens and private paths.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: "`docker logs vllm-eagle` tail, or `./scripts/verify.sh` output"
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: I did not include tokens, keys, or private paths in this report.
+          required: true

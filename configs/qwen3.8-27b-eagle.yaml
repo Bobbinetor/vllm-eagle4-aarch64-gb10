@@ -1,0 +1,36 @@
+# Qwen3.8-27B NVFP4 + EAGLE4 (arm64, build locale)
+#
+# MISURATO il 30/10/2026 (bench 3 richieste, concorrenza 1):
+#   base 12,17/12,13 -> DFlash2 29,10/29,22 -> EAGLE4 35,17/53,05 tok/s
+#   TTFT EAGLE4: 239 ms agentic / 291 ms echo (piu' alto di DFlash2)
+# E' il profilo piu' veloce; per la latenza minima usare il target senza EAGLE4.
+#
+# Richiede l'immagine vllm-eagle:gb10 costruita da docker/Dockerfile.eagle
+# con la wheel compilata dal fork eagle-hq/vllm.
+#
+# La ricetta ufficiale usa anche --linear-backend flashinfer_cutedsl, ma
+# flashinfer-python non ha wheel arm64: qui si usa il backend lineare di default.
+# La verifica ad albero richiede Model Runner V2, backend attenzione CUSTOM e
+# KV cache non quantizzata.
+name: qwen3.8-27b-eagle
+image: vllm-eagle:gb10
+model: nvidia/Qwen3.8-27B-NVFP4
+served_name: qwen3.8-27b-eagle
+port: 8000
+max_model_len: 65536
+gpu_mem_util: 0.45
+max_num_seqs: 4
+startup_timeout_s: 1800
+env:
+  - VLLM_USE_V2_MODEL_RUNNER=1
+speculative_config: '{"method":"eagle_harness","model":"EAGLE-Corp/Qwen3.8-27B-EAGLE4","method_config":{"mode":"static","node_top_k":4,"tree_depth":14,"max_verify_width":16}}'
+speculative_default: "on"
+extra_args:
+  - --attention-backend
+  - CUSTOM
+  - --language-model-only
+  - --trust-remote-code
+  - --enable-auto-tool-choice
+  - --tool-call-parser
+  - qwen3_coder
+  - --enable-prefix-caching

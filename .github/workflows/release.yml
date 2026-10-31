@@ -1,0 +1,111 @@
+name: release
+
+# Manual only: builds a release from a wheel you provide by URL.
+# The wheel is never committed to git (494 MB > GitHub's 100 MB file limit).
+# Default is a DRAFT release, so nothing goes public until you publish it.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release tag, e.g. v0.1.0"
+        required: true
+        default: "v0.1.0"
+      wheel_url:
+        description: "HTTPS URL of the .whl to attach"
+        required: true
+      wheel_sha256:
+        description: "Expected SHA-256 of the wheel"
+        required: true
+        default: "fbd7ec77a34f608b4158d7a7196f75a1f78100da3645825e0a30657f72408237"
+      draft:
+        description: "Create as draft (recommended)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: create ${{ inputs.version }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate inputs
+        env:
+          VERSION: ${{ inputs.version }}
+          WHEEL_URL: ${{ inputs.wheel_url }}
+        run: |
+          set -euo pipefail
+          [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.]+)?$ ]] \
+            || { echo "invalid version: $VERSION"; exit 1; }
+          [[ "$WHEEL_URL" == https://* ]] \
+            || { echo "wheel_url must be https"; exit 1; }
+          test -s "docs/releases/$VERSION.md"
+
+      - name: Download the wheel
+        env:
+          WHEEL_URL: ${{ inputs.wheel_url }}
+        run: |
+          set -euo pipefail
+          name="$(basename "${WHEEL_URL%%\?*}")"
+          echo "WHEEL_NAME=$name" >> "$GITHUB_ENV"
+          curl -fL --retry 3 --retry-delay 2 -o "$name" "$WHEEL_URL"
+          ls -l "$name"
+
+      - name: Verify the wheel
+        env:
+          EXPECTED: ${{ inputs.wheel_sha256 }}
+        run: |
+          set -euo pipefail
+          echo "$EXPECTED  $WHEEL_NAME" | sha256sum -c -
+          grep -qF "$EXPECTED" SHA256SUMS \
+            || { echo "wheel hash is not in SHA256SUMS"; exit 1; }
+          python3 scripts/audit_hooks.py "$WHEEL_NAME"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          DRAFT: ${{ inputs.draft }}
+          TARGET: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          args=(
+            "$VERSION" "$WHEEL_NAME" SHA256SUMS
+            --repo "$GITHUB_REPOSITORY"
+            --title "$VERSION — vLLM 0.32.0rc1.dev283+eagle.3 for aarch64 / GB10"
+            --notes-file "docs/releases/$VERSION.md"
+            --target "$TARGET"
+          )
+          if [[ "$DRAFT" == "true" ]]; then
+            args+=(--draft)
+          else
+            args+=(--latest)
+          fi
+          gh release create "${args[@]}"
+          gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" --json url,isDraft \
+            --template '{{.url}} draft={{.isDraft}}{{"\n"}}'
+
+      - name: Summary
+        run: |
+          {
+            echo "### Release ${{ inputs.version }}"
+            echo
+            echo "- Wheel: \`$WHEEL_NAME\`"
+            echo "- SHA-256: \`${{ inputs.wheel_sha256 }}\`"
+            echo "- Draft: \`${{ inputs.draft }}\`"
+            echo
+            if [[ "${{ inputs.draft }}" == "true" ]]; then
+              echo "Review it in the Releases page, then publish it."
+            else
+              echo "Published. The release-verify workflow now re-checks the asset."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

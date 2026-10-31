@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: repository checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Links, sources, checksums, leaks
+        run: python3 scripts/check_repo.py
+
+      - name: Shell syntax
+        run: bash -n scripts/*.sh build/*.sh
+
+      - name: Python syntax
+        run: |
+          python3 -m py_compile scripts/*.py
+          rm -rf scripts/__pycache__
+
+      - name: Static wheel audit (if a wheel is present)
+        run: |
+          if compgen -G "vllm-*.whl" > /dev/null; then
+            python3 scripts/audit_hooks.py vllm-*.whl
+          else
+            echo "No wheel in the checkout: it is a release asset. Skipped."
+          fi
+
+      - name: Release notes present
+        run: |
+          set -e
+          for f in docs/releases/*.md; do
+            test -s "$f"
+            echo "ok: $f"
+          done

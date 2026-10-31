@@ -1,0 +1,66 @@
+name: release-verify
+
+# Trust check: after a release is published, download the published asset from
+# GitHub (not from the build machine) and verify it. The badge in the README is
+# the result of this job.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to re-verify, e.g. v0.1.0"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify published asset
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download the published assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          set -euo pipefail
+          test -n "$TAG"
+          mkdir -p dist
+          gh release download "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir dist \
+            --pattern '*.whl' \
+            --pattern 'SHA256SUMS'
+          ls -l dist
+
+      - name: Verify checksum of the published wheel
+        working-directory: dist
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          wheels=( *.whl )
+          [[ ${#wheels[@]} -eq 1 ]] || { echo "expected exactly one wheel"; exit 1; }
+          sha256sum -c --ignore-missing SHA256SUMS
+          wc -c "${wheels[0]}"
+
+      - name: Static 10-hook audit of the published wheel
+        run: python3 scripts/audit_hooks.py dist/*.whl
+
+      - name: Summary
+        run: |
+          {
+            echo "### Published asset verified"
+            echo
+            echo "- Tag: \`${{ github.event.release.tag_name || inputs.tag }}\`"
+            echo "- Wheel: \`$(basename dist/*.whl)\`"
+            echo "- SHA-256: \`$(sha256sum dist/*.whl | cut -d' ' -f1)\`"
+            echo "- Hook audit: PASS"
+          } >> "$GITHUB_STEP_SUMMARY"

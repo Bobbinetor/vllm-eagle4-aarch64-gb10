@@ -1,9 +1,8 @@
 # Qwen3.8-27B NVFP4 + EAGLE4 (arm64, build locale)
 #
-# MISURATO il 30/10/2026 (bench 3 richieste, concorrenza 1):
-#   base 12,17/12,13 -> DFlash2 29,10/29,22 -> EAGLE4 35,17/53,05 tok/s
-#   TTFT EAGLE4: 239 ms agentic / 291 ms echo (piu' alto di DFlash2)
-# E' il profilo piu' veloce; per la latenza minima usare il target senza EAGLE4.
+# Profilo validato con lo smoke test. Nessun benchmark pubblicato: le misure
+# iniziali, singola macchina e singola run, sono state ritirate.
+# Per misurare: python3 scripts/bench.py --preset agentic --requests 3
 #
 # Richiede l'immagine vllm-eagle:gb10 costruita da docker/Dockerfile.eagle
 # con la wheel compilata dal fork eagle-hq/vllm.

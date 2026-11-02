@@ -117,19 +117,15 @@ eagle-harness: registered speculative method eagle_harness and draft LlamaForCau
 Smoke suite (`scripts/smoke.sh`): **6/6 PASS** — health, models, chat, tool_call,
 streaming, long_context.
 
-Agent test: a tool-use run with the `shell` tool (`echo EAGLE4-OK`) completed in
-7.3 s with one tool call.
+Agent test: a tool-use run with the `shell` tool (`echo EAGLE4-OK`) completed
+with one tool call.
 
-Benchmark (single stream, concurrency 1, 3 requests, 64K context, temperature 0,
-`max_tokens=256`):
-
-| Configuration | Agentic tok/s | Echo tok/s | TTFT agentic |
-|---|---:|---:|---:|
-| Base | 12.17 | 12.13 | 141 ms |
-| DFlash2 | 29.10 | 29.22 | 138 ms |
-| EAGLE-4 | 35.17 | 53.05 | 239 ms |
-
-Method and caveats: [`BENCHMARKS.md`](BENCHMARKS.md).
+Throughput and TTFT: **not a published claim**. The initial single-machine
+numbers were withdrawn because they were not independently reproducible. No
+performance number in this document is verified. `scripts/bench.py` implements
+the method; [`BENCHMARKING.md`](BENCHMARKING.md) has the controlled variables and
+the report template. Verified community results will be added to the README with
+the reporter's hardware and command.
 
 ## 4. What was not verified
 
@@ -161,7 +157,7 @@ python3 scripts/audit_hooks.py vllm-*.whl
 # runtime smoke (server must be up)
 BASE_URL=http://127.0.0.1:8000 ./scripts/smoke.sh
 
-# benchmark, including acceptance rate if /metrics is exposed
+# optional: measure on your machine and report (no published claim)
 python3 scripts/bench.py --preset agentic --requests 3 \
   --metrics-url http://127.0.0.1:8000/metrics \
   --json-out bench-$(date +%Y%m%d-%H%M%S).json

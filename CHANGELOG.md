@@ -35,10 +35,9 @@ First public GitHub Release. The artifact is the wheel built and tested on
 - `TORCH_CUDA_ARCH_LIST=12.1a`, `MAX_JOBS=16`, Python 3.12.
 - `eagle-harness-check`: every hook present (10/10 static audit).
 - Runtime smoke: health, models, chat, tool calls, streaming, 64K context.
-- Single-stream benchmark on DGX Spark (GB10), Qwen3.8-27B NVFP4:
-  - base 12.17 tok/s agentic / 12.13 tok/s echo
-  - DFlash2 29.10 / 29.22
-  - EAGLE-4 35.17 / 53.05, TTFT 239 ms agentic
+- No performance claim is published. The initial single-machine numbers were
+  withdrawn; the method is in `docs/BENCHMARKING.md` and community results are
+  invited.
 
 ### Known deltas
 

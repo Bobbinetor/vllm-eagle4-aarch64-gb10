@@ -13,7 +13,7 @@ verifica ogni asset pubblicato.
 > build Apache-2.0 di vLLM. `eagle-harness` e il draft EAGLE-4 sono download
 > separati, soggetti alla Eagle 4 Source-Available License.
 
-La guida completa, i benchmark e le note di verifica sono nel
+La guida completa, le note di verifica e come misurare le prestazioni sono nel
 [README principale](README.md) (in inglese).
 
 ## Requisiti
@@ -73,18 +73,24 @@ python3 scripts/audit_hooks.py vllm-0.32.0rc1.dev283+eagle.3-cp312-cp312-linux_a
 Controlla i 10 hook richiesti da `eagle-harness` 0.1.4. Il risultato atteso è
 `10/10 hooks present` e `RESULT: PASS`.
 
-## Benchmark (misura del maintainer, 30/10/2026)
+## Prestazioni
 
-DGX Spark GB10, Qwen3.8-27B NVFP4, contesto 64K, concorrenza 1, 3 richieste:
+**Nessun numero di benchmark è pubblicato in questa repo.** Le prime misure
+venivano da una sola macchina e da una sola run, senza riproduzione indipendente:
+non sono bastate per pubblicarle come claim, quindi sono state ritirate.
 
-| Configurazione | Agentic tok/s | Echo tok/s | TTFT agentic |
-|---|---:|---:|---:|
-| Base | 12,17 | 12,13 | 141 ms |
-| DFlash2 | 29,10 | 29,22 | 138 ms |
-| **EAGLE-4** | **35,17** | **53,05** | 239 ms |
+Se vuoi sapere quanto va sulla tua macchina:
 
-Il valore "echo" è un prompt sintetico e ripetitivo: non usarlo come numero
-generico. Dettagli e limiti in [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md).
+```bash
+python3 scripts/bench.py --preset agentic --requests 3
+python3 scripts/bench.py --preset echo    --requests 3
+```
+
+Apri poi una **Discussion** o un issue *Run report* con output, hardware, driver
+e comando usato. I risultati verificati verranno aggiunti al README principale,
+con hardware e metodo. Anche i risultati negativi sono utili.
+
+Metodo e variabili da controllare: [`docs/BENCHMARKING.md`](docs/BENCHMARKING.md).
 
 ## Documenti originali (italiano)
 

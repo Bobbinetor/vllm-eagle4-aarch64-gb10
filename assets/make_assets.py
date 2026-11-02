@@ -114,68 +114,19 @@ def architecture():
     text(d, (1090, 356), "draft", 15, MUTED, anchor="ma")
     text(d, (1090, 510), "verify", 15, MUTED, anchor="ma")
 
-    # Stats
-    stats = [("35.2", "tok/s agentic"), ("53.1", "tok/s echo"), ("239 ms", "TTFT agentic")]
+    # Verified facts (no performance numbers)
+    facts = [("10/10", "EAGLE-4 hooks"), ("aarch64", "linux wheel"), ("SHA-256", "verified asset")]
     x = 80
-    for value, label in stats:
+    for value, label in facts:
         panel(d, (x, 720, x + 460, 850), fill=PANEL, radius=18)
-        text(d, (x + 28, 742), value, 38, GREEN, bold=True)
+        text(d, (x + 28, 742), value, 34, GREEN, bold=True)
         text(d, (x + 28, 800), label, 20, MUTED)
         x += 490
 
-    text(d, (80, 892), "Unofficial build  ·  Apache-2.0 vLLM wheel  ·  measured on one DGX Spark, 2026-10-30", 16, MUTED)
+    text(d, (80, 892), "Unofficial build  ·  Apache-2.0 vLLM wheel  ·  no performance claim: run scripts/bench.py and report", 16, MUTED)
     img.save(HERE / "architecture.png")
     print("wrote architecture.png")
 
 
-def benchmark():
-    w, h = 1400, 820
-    img = Image.new("RGB", (w, h), BG)
-    d = ImageDraw.Draw(img)
-
-    text(d, (80, 60), "Single-stream throughput on DGX Spark (GB10)", 40, TEXT, bold=True)
-    text(d, (80, 118), "Qwen3.8-27B NVFP4  ·  64K context  ·  concurrency 1  ·  3 requests  ·  maintainer measurement", 20, MUTED)
-
-    # Plot area
-    left, top, right, bottom = 160, 220, 1320, 660
-    d.line([(left, bottom), (right, bottom)], fill=BORDER, width=2)
-    max_val = 60
-    for tick in range(0, 61, 10):
-        y = bottom - (tick / max_val) * (bottom - top)
-        d.line([(left, y), (right, y)], fill="#1A2638", width=1)
-        text(d, (left - 18, y), str(tick), 16, MUTED, anchor="rm")
-
-    groups = [
-        ("Agentic", [("Base", 12.17, "#3B4A5A"), ("DFlash2", 29.10, BLUE), ("EAGLE-4", 35.17, GREEN)]),
-        ("Echo", [("Base", 12.13, "#3B4A5A"), ("DFlash2", 29.22, BLUE), ("EAGLE-4", 53.05, GREEN)]),
-    ]
-    group_centers = [420, 1000]
-    bar_w = 78
-    gap = 18
-    for (label, bars), center in zip(groups, group_centers):
-        total = len(bars) * bar_w + (len(bars) - 1) * gap
-        start = center - total / 2
-        for i, (name, value, color) in enumerate(bars):
-            x0 = start + i * (bar_w + gap)
-            y0 = bottom - (value / max_val) * (bottom - top)
-            d.rounded_rectangle((x0, y0, x0 + bar_w, bottom), radius=8, fill=color)
-            text(d, (x0 + bar_w / 2, y0 - 14), f"{value:.1f}", 20, TEXT, bold=True, anchor="mb")
-        text(d, (center, bottom + 26), label, 22, TEXT, bold=True, anchor="ma")
-
-    # Legend
-    legend = [("Base", "#3B4A5A"), ("DFlash2", BLUE), ("EAGLE-4", GREEN)]
-    x = 160
-    for name, color in legend:
-        d.rounded_rectangle((x, 728, x + 18, 746), radius=4, fill=color)
-        text(d, (x + 28, 724), name, 18, MUTED)
-        x += 160
-
-    text(d, (160, 770), "End-to-end completion tokens / wall time. The echo prompt is synthetic and deliberately repetitive.", 16, MUTED)
-    text(d, (160, 794), "Not an independent benchmark. See docs/BENCHMARKS.md for method and caveats.", 16, MUTED)
-    img.save(HERE / "benchmark.png")
-    print("wrote benchmark.png")
-
-
 if __name__ == "__main__":
     architecture()
-    benchmark()

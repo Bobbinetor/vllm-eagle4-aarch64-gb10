@@ -29,7 +29,8 @@
 
 - `eagle-harness-check` reports every required hook present.
 - OpenAI-compatible chat, tool calls, streaming, and the long-context smoke case in the 64K-context configuration pass.
-- Single-stream throughput: **35.2 tok/s** on an agentic prompt and **53.1 tok/s** on a repetitive prompt, with Qwen3.8-27B NVFP4 and a 64K context window, concurrency 1.
+
+Throughput is **not published yet**. The first numbers came from a single machine and were not independently reproducible, so they were withdrawn. Run [`scripts/bench.py`](scripts/bench.py) on your GB10 and open a run report: verified results will be listed here with the hardware and the method. See [Benchmarks](#benchmarks).
 
 Independent reproduction is invited. See [Report your run](#report-your-run).
 
@@ -156,10 +157,10 @@ Then:
 | `scripts/verify.sh` | Checks arch, Python, checksums, wheel tag, and hooks |
 | `scripts/audit_hooks.py` | **Static** hook audit: verifies the 10 hooks `eagle-harness` 0.1.4 needs, without a GPU |
 | `scripts/smoke.sh` | Health, models, chat, tool call, streaming, long context |
-| `scripts/bench.py` | OpenAI-compatible benchmark with TTFT and optional acceptance-rate scraping |
+| `scripts/bench.py` | Optional benchmark script: run it and report your numbers |
 | `scripts/release.sh` | Dry-run-first release helper: checks, tags, and uploads assets with `gh` |
 | `docs/VERIFICATION.md` | The evidence: checksums, hook table, runtime logs, what was and was not tested |
-| `docs/BENCHMARKS.md` | Benchmark method, raw numbers, and caveats |
+| `docs/BENCHMARKING.md` | How to measure and report results (no published numbers yet) |
 | `docs/TROUBLESHOOTING.md` | Every error encountered during the build, with fixes |
 | `docs/LICENSING.md` | Component licenses, trademark policy, commercial-use note |
 | `docs/releases/v0.1.0.md` | The release notes published on the GitHub Release page |
@@ -167,7 +168,6 @@ Then:
 | `README.it.md` | Italian quick start |
 | `CHANGELOG.md` | Build and version history |
 | `NOTICE`, `licenses/` | Attribution and third-party license texts |
-| `bench/aggregate-2026-10-30.json` | The aggregate benchmark record behind the table |
 | `.github/` | CI, release automation, post-release asset verification, issue templates |
 
 ---
@@ -249,19 +249,17 @@ The tag, the release notes, and the asset checksum are the source of truth. If a
 
 ## Benchmarks
 
-Maintainer measurement on a single DGX Spark (GB10), Qwen3.8-27B NVFP4, 64K context window, concurrency 1, 3 requests per preset, temperature 0, `max_tokens=256`:
+**No benchmark numbers are published in this repository.**
 
-| Configuration | Agentic tok/s | Echo tok/s | TTFT (agentic) |
-|---|---:|---:|---:|
-| Base (no speculative decoding) | 12.17 | 12.13 | 141 ms |
-| DFlash2 | 29.10 | 29.22 | 138 ms |
-| **EAGLE-4** | **35.17** | **53.05** | 239 ms |
+The first measurements came from a single DGX Spark, one run, with no independent reproduction. That is not enough to publish as a performance claim, so the numbers were withdrawn. This repository is about the artifact and its verifiability, not about a speed claim.
 
-![Benchmark](assets/benchmark.png)
+If you want to know how fast it is on your hardware:
 
-**How to read this.** EAGLE-4 wins on decode throughput — about **2.9×** over base on the agentic prompt and **4.4×** on the synthetic echo prompt. The echo number is deliberately repetitive and is not representative of real workloads. TTFT is higher than DFlash2 (239 ms vs 138 ms) because tree verification costs work before the first accepted token. If your workload is latency-sensitive and short, DFlash2 may feel better; if it is decode-bound, EAGLE-4 is faster.
+1. Run `python3 scripts/bench.py --preset agentic --requests 3` (and `--preset echo` if you like), with and without `--speculative-config`.
+2. Open a **Run report** with the output, the exact hardware, the driver, and the method.
+3. Verified results will be added to this section, with the reporter's hardware and the full command.
 
-These are single-stream numbers from one machine. They are not an independent benchmark, not a multi-user throughput result, and not directly comparable to the upstream EAGLE-4 paper (which reports 2.83× for vLLM on 4×B300). Re-run the method with `scripts/bench.py` and [tell us what you get](#report-your-run).
+The method, the variables to control, and the report template are in [`docs/BENCHMARKING.md`](docs/BENCHMARKING.md). Negative results — including "it is not faster" — are welcome and will be listed the same way.
 
 ---
 
@@ -322,15 +320,15 @@ Build time is ~25–30 minutes on 20 cores. The build document records every err
 - Static audit of all 10 hooks `eagle-harness` 0.1.4 requires.
 - `eagle-harness-check` at runtime.
 - `/health`, `/v1/models`, `/v1/chat/completions`, tool calls, streaming, and the long-context smoke case (64K configuration).
-- Single-stream throughput and TTFT for base, DFlash2, and EAGLE-4.
-- One agentic tool-use run (`echo EAGLE4-OK`, 7.3 s, one tool call).
+- One agentic tool-use run (`echo EAGLE4-OK`, one tool call).
+- **Not** throughput or TTFT: no public performance claim is made. Use `scripts/bench.py` and report if you want a number.
 
 **Not tested**
 
 - A second DGX Spark or an independent reproduction.
 - Multi-user / high-concurrency throughput.
-- Long-running stability beyond the smoke and bench runs.
-- Acceptance rate and per-position acceptance (not logged in the original run; `scripts/bench.py` can scrape them if you pass `--metrics-url`).
+- Long-running stability beyond the smoke runs.
+- Acceptance rate and per-position acceptance; `scripts/bench.py` can scrape them if you pass `--metrics-url`.
 - Other target models or other EAGLE-4 drafts.
 - x86_64 or other ARM GPUs.
 - Power/thermal behavior under sustained load.

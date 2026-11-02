@@ -148,22 +148,18 @@ curl -s http://127.0.0.1:8000/v1/chat/completions \
   | python3 -c "import sys,json;m=json.load(sys.stdin)['choices'][0]['message'];print(m.get('tool_calls'))"
 ```
 
-### Benchmark rapido
+### Misurare le prestazioni
+
+Nessun benchmark è pubblicato. Le misure iniziali (una macchina, una run) sono
+state ritirate. Per misurare sulla tua macchina:
 
 ```bash
-python3 - <<'PY'
-import json,time,urllib.request
-t0=time.time(); n=0
-p={"model":"qwen3.8-27b-eagle","messages":[{"role":"user","content":"Scrivi 200 parole sull'importanza dei test."}],"max_tokens":256,"temperature":0}
-r=urllib.request.Request("http://127.0.0.1:8000/v1/chat/completions",data=json.dumps(p).encode(),headers={"Content-Type":"application/json"})
-d=json.load(urllib.request.urlopen(r,timeout=600))
-u=d["usage"]; dt=time.time()-t0
-print(f"{u['completion_tokens']} token in {dt:.1f}s = {u['completion_tokens']/dt:.1f} tok/s")
-PY
+python3 scripts/bench.py --preset agentic --requests 3
+python3 scripts/bench.py --preset echo    --requests 3
 ```
 
-Valori attesi su GB10 (concorrenza 1): **~35 tok/s** su prompt agentico,
-**~53 tok/s** su output ripetitivo, TTFT ~240 ms.
+Apri poi una run report con output, hardware, driver e comando. Metodo e
+variabili da controllare: [`docs/BENCHMARKING.md`](../BENCHMARKING.md).
 
 ## 6. Parametri modificabili
 

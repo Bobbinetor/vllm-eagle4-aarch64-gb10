@@ -325,15 +325,11 @@ python3 scripts/bench.py --preset agentic --requests 3 --label eagle4-agentic
 python3 scripts/bench.py --preset echo    --requests 3 --label eagle4-echo
 ```
 
-Risultati misurati (concorrenza 1):
+Nessun benchmark pubblicato: le misure iniziali (una macchina, una run) sono
+state ritirate. Esegui `scripts/bench.py` e apri una run report; i risultati
+verificati vengono aggiunti al README con hardware e comando.
 
-| Configurazione | agentic tok/s | echo tok/s | TTFT agentic |
-|---|---|---|---|
-| base | 12,17 | 12,13 | 141 ms |
-| DFlash2 | 29,10 | 29,22 | 138 ms |
-| **EAGLE4** | **35,17** | **53,05** | 239 ms |
-
-Test agente: riuscito, 7,3 s, 1 tool call (`echo EAGLE4-OK` via tool shell).
+Test agente: riuscito, 1 tool call (`echo EAGLE4-OK` via tool shell).
 
 ---
 
@@ -408,7 +404,7 @@ di questa procedura.
 4. **Immagine locale**: `vllm-eagle:gb10` non è su un registry. Dopo un
    reset va ricostruita (wheel + Dockerfile sono in `$HOME/eagle4-build`).
 5. **Fork sperimentale**: il branch `eagle/v0.1.0` può cambiare; il commit è
-   pinnato nello script. Non aggiornare senza rifare smoke + bench.
+   pinnato nello script. Non aggiornare senza rifare smoke + verifica.
 6. **Un solo modello alla volta**: EAGLE4 occupa ~28 GB tra target e draft;
    sommati alla KV cache, non convivono con un secondo server.
 
@@ -426,5 +422,4 @@ $HOME/eagle4-build/
 
 $HOME/eagle4-build/profiles/qwen3.8-27b-eagle.yaml  profilo di servizio
 ./logs/build-eagle.log                  log completo della build
-./bench/bench-results.jsonl              misure
 ```

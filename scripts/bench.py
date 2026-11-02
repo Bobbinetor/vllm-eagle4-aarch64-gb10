@@ -4,9 +4,9 @@
 Measures TTFT, end-to-end tok/s, and decode tok/s with streaming. Optionally
 scrapes vLLM's Prometheus endpoint to report speculative-decoding acceptance.
 
-The original measurements in docs/BENCHMARKS.md used a private harness. This
-script reproduces the method (single stream, temperature 0, fixed max_tokens),
-not the exact prompt, so expect small differences.
+The original measurements used a private harness and were withdrawn because
+they were not independently reproducible. This script is the reproducible
+method: run it on your machine and report the result (see docs/BENCHMARKING.md).
 
 Usage:
     python3 scripts/bench.py --preset agentic --requests 3

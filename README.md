@@ -3,13 +3,10 @@
 <p align="center"><b>Prebuilt <code>aarch64</code> wheel for NVIDIA GB10 (sm_121) · Python 3.12</b></p>
 
 <p align="center">
-  <a href="https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/releases/latest"><img src="https://img.shields.io/github/v/release/Bobbinetor/vllm-eagle4-aarch64-gb10?label=release" alt="Latest release"></a>
+  <a href="https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/releases/latest"><img src="https://img.shields.io/github/v/release/Bobbinetor/vllm-eagle4-aarch64-gb10" alt="Latest release"></a>
   <a href="https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/actions/workflows/ci.yml"><img src="https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/actions/workflows/release-verify.yml"><img src="https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/actions/workflows/release-verify.yml/badge.svg" alt="Release asset verification"></a>
-  <img src="https://img.shields.io/badge/arch-aarch64-blue" alt="aarch64">
-  <img src="https://img.shields.io/badge/GPU-GB10%20%2F%20sm__121-76b900" alt="GB10">
-  <img src="https://img.shields.io/badge/vLLM-0.32.0rc1.dev283%2Beagle.3-orange" alt="vLLM version">
-  <img src="https://img.shields.io/badge/Python-3.12-yellow" alt="Python 3.12">
+  <img src="https://img.shields.io/badge/arch-aarch64%20%C2%B7%20GB10%20sm__121-blue" alt="arch: aarch64 · GB10 sm_121">
+  <img src="https://img.shields.io/badge/python-3.12-yellow" alt="Python 3.12">
   <img src="https://img.shields.io/badge/license-Apache--2.0-lightgrey" alt="Apache-2.0">
 </p>
 
@@ -252,8 +249,8 @@ This opens the wheel as a zip and checks the exact symbols `eagle-harness` 0.1.4
 
 Every published release is verified twice:
 
-- `ci.yml` runs the static checks (links, checksums of tracked files, script syntax) on every push.
-- `release-verify.yml` runs after a release is published: it downloads the published wheel from the release, verifies `SHA256SUMS`, and re-runs the 10-hook audit on the downloaded file. The badge at the top of this README is the result of that job.
+- `ci.yml` runs the static checks (links, checksums of tracked files, script syntax) on every push; its badge is the CI badge at the top of this README.
+- `release-verify.yml` runs after a release is published: it downloads the published wheel from the release, verifies `SHA256SUMS`, and re-runs the 10-hook audit on the downloaded file.
 
 The tag, the release notes, and the asset checksum are the source of truth. If a checksum ever fails, open an issue and do not run the artifact.
 

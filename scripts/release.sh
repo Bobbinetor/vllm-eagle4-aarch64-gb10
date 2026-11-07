@@ -126,12 +126,12 @@ if git remote get-url origin >/dev/null 2>&1; then
 else
   printf '  remote: (none yet)\n'
 fi
+TAG_EXISTS=0
 if git ls-remote --exit-code --tags origin "$VERSION" >/dev/null 2>&1; then
-  REMOTE_TAG_SHA="$(git rev-parse "$VERSION^{commit}" 2>/dev/null || echo "?")"
-  if [[ "$REMOTE_TAG_SHA" == "$HEAD_SHA" ]]; then
-    printf '  tag:    %s already exists and points at HEAD; reusing it\n' "$VERSION"
-  else
-    die "tag $VERSION exists on the remote but points at ${REMOTE_TAG_SHA:?}, not at HEAD ($HEAD_SHA)"
+  TAG_EXISTS=1
+  printf '  tag:    %s already exists on the remote; will attach the release to it\n' "$VERSION"
+  if gh release view "$VERSION" --repo "$REPO" >/dev/null 2>&1; then
+    die "a release for $VERSION already exists on the remote ($REPO)"
   fi
 fi
 
@@ -151,8 +151,8 @@ release_args=(
   --repo "$REPO"
   --title "$TITLE"
   --notes-file "$NOTES"
-  --target "$HEAD_SHA"
 )
+[[ "$TAG_EXISTS" -eq 0 ]] && release_args+=(--target "$HEAD_SHA")
 [[ "$DRAFT" -eq 1 ]] && release_args+=(--draft)
 [[ "$DRAFT" -eq 0 ]] && release_args+=(--latest)
 

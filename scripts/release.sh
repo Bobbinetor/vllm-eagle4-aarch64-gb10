@@ -127,7 +127,12 @@ else
   printf '  remote: (none yet)\n'
 fi
 if git ls-remote --exit-code --tags origin "$VERSION" >/dev/null 2>&1; then
-  die "tag $VERSION already exists on the remote"
+  REMOTE_TAG_SHA="$(git rev-parse "$VERSION^{commit}" 2>/dev/null || echo "?")"
+  if [[ "$REMOTE_TAG_SHA" == "$HEAD_SHA" ]]; then
+    printf '  tag:    %s already exists and points at HEAD; reusing it\n' "$VERSION"
+  else
+    die "tag $VERSION exists on the remote but points at ${REMOTE_TAG_SHA:?}, not at HEAD ($HEAD_SHA)"
+  fi
 fi
 
 [[ -n "$TITLE" ]] || TITLE="$VERSION — vLLM 0.32.0rc1.dev283+eagle.3 for aarch64 / GB10"

@@ -28,6 +28,33 @@ The wheel's `METADATA` declares `License-Expression: Apache-2.0`. No Python
 source file in the wheel is marked `LicenseRef-Eagle-4-Source-Available`; the
 EAGLE-4 hook files are Apache-2.0.
 
+### Independent license audit of the wheel (2026-11-07)
+
+The wheel contents were audited directly (ZIP integrity, file-size/hash checks
+against `RECORD`, SPDX headers of every `.py`/`.h`/`.cuh`/`.cu`/`.c`/`.cpp`):
+
+- `dist-info/licenses/LICENSE` is **byte-identical** to the `LICENSE` of
+  `vllm-project/vllm` and of `eagle-hq/vllm` (same SHA-256). The fork did not
+  modify the license text.
+- SPDX identifiers across ~6,000 source files:
+  **Apache-2.0: 2,628** · **BSD-3-Clause: 1,045** · **MIT: 103**.
+- No GPL/AGPL license text (full-text scan) and **no `LicenseRef-*` /
+  source-available identifiers** in any bundled file: `eagle-harness` and the
+  EAGLE-4 draft model are **not bundled** and are not shipped under their own
+  licenses.
+- The non-Apache identifiers come from vendored, permissively licensed
+  components: CUTLASS and FlashAttention headers (BSD-3-Clause), the DeepGEMM
+  and MiniMax `fmha_sm100` sources (MIT/BSD-3-Clause,
+  `vllm/third_party/{deep_gemm,fmha_sm100}`), plus `flash_linear_attention`
+  (MIT) and `vllm_flash_attn/cute` (BSD-3-Clause), which ship their own
+  `LICENSE` files inside the wheel.
+- Compliance gap found: one vendored miniMax FMHA header
+  (`third_party/fmha_sm100/csrc/include/dequant_nvfp4_e4m3.cuh`) is tagged
+  `SPDX-License-Identifier: MIT` but carries no copyright line. This is
+  inherited unchanged from the upstream fork; per MIT §1 the copyright and
+  permission notice must be preserved in redistributions, so it is flagged
+  here. Everything else retained its notices.
+
 ## What this repository does **not** redistribute
 
 | Component | License | How to get it |

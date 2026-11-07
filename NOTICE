@@ -27,10 +27,28 @@ license texts are reproduced in `licenses/`.
 | FlashAttention (vLLM fork) | BSD-3-Clause | https://github.com/vllm-project/flash-attention/tree/b273a02621d3c94bc747df67204f591b67f38fae |
 | CUTLASS | BSD-3-Clause | https://github.com/NVIDIA/cutlass/tree/62750a2b75c802660e4894434dc55e839f322277 and tag `v4.7.1` |
 | DeepGEMM | MIT | https://github.com/vllm-project/DeepGEMM/tree/a7a927731b109fdfec770df7c2a5be5d7e2216b5 |
+| `vllm/third_party/fmha_sm100` (MiniMax FMHA for SM100) | MIT / BSD-3-Clause | https://github.com/MiniMax-AI/MSA — files carry `SPDX-License-Identifier: MIT` or `BSD-3-Clause` with copyright notices |
+| `vllm/third_party/flash_linear_attention` | MIT | ships its own `LICENSE` (Songlin Yang, Yu Zhang) |
+| `vllm/vllm_flash_attn/cute` | BSD-3-Clause | ships its own `LICENSE` |
 
 This list covers the main pinned components. It is not a complete audit of every
 transitive dependency of the Python environment in which the wheel is installed;
 those dependencies are resolved by pip and keep their own licenses.
+
+## License audit of the wheel (2026-11-07)
+
+An independent audit of the wheel contents found:
+
+- The wheel's `licenses/LICENSE` is byte-identical (same SHA-256,
+  `c71d239d...`) to the `LICENSE` of `vllm-project/vllm` and of
+  `eagle-hq/vllm`: the license text was not altered by the fork.
+- SPDX identifiers in the wheel sources: 2,628 × Apache-2.0, 1,045 ×
+  BSD-3-Clause, 103 × MIT. No GPL/AfferoGPL text, no `LicenseRef` /
+  source-available identifiers.
+- All vendored BSD-3-Clause and MIT files carry their copyright notices, with
+  one known exception inherited from upstream (a single MiniMax FMHA header,
+  `third_party/fmha_sm100/csrc/include/dequant_nvfp4_e4m3.cuh`, tagged MIT
+  without a copyright line).
 
 ## Not included in this repository
 

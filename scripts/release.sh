@@ -167,7 +167,7 @@ fi
 
 step "Publishing"
 gh release create "${release_args[@]}"
-git fetch --tags --quiet || true
+git fetch --tags >/dev/null 2>&1 || true
 printf '\nRelease created: https://github.com/%s/releases/tag/%s\n' "$REPO" "$VERSION"
 if [[ "$DRAFT" -eq 1 ]]; then
   echo "It is a draft: review it on GitHub, then publish it from the Releases page."

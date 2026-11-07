@@ -139,8 +139,12 @@ the reporter's hardware and command.
 - A full 64K-token prompt: the smoke suite's long-context case passed, but the
   exact token count and needle-in-a-haystack behavior were not recorded.
 - The claim that every compiled kernel has a native sm_121 cubin. The build was
-  configured with `TORCH_CUDA_ARCH_LIST=12.1a`; a cubin-level audit was not
-  performed.
+  configured with `TORCH_CUDA_ARCH_LIST=12.1a`; a cubin-level audit was since
+  performed and did **not** find native sm_121 cubin strings. The audited GPU
+  code is: `sm_75`/`sm_80` cubins in some vLLM prebuilt kernels, a first fatbin
+  entry of `sm_120` in `_C_stable_libtorch`, and embedded PTX. Same-major
+  sm_120 cubins run on sm_121 forward-compatibly, and the embedded PTX is
+  JIT-compiled on first load (a contributor to the ~10–11 min first start).
 
 If you need any of these before production use, measure them. The scripts are
 here so your result can be added without guessing.

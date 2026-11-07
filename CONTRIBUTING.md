@@ -24,7 +24,7 @@ that no token or private path leaked. CI runs the same checks.
 - **Build-recipe fixes**: a pin that moved, a missing system package, a cleaner
   workaround for one of the seven documented failures.
 - **Script fixes** that make verification or benchmarking more reliable.
-- **Documentation fixes**, including the Italian originals in `docs/it/`.
+- **Documentation fixes** for the README, the build record, and the verification docs.
 - **Negative results** with enough detail to reproduce the failure.
 
 ## What is not accepted

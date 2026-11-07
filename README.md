@@ -13,8 +13,6 @@
   <img src="https://img.shields.io/badge/license-Apache--2.0-lightgrey" alt="Apache-2.0">
 </p>
 
-<p align="center"><a href="README.it.md">Leggi in italiano</a></p>
-
 > **What this is:** a prebuilt `linux_aarch64` wheel of the EAGLE-4-patched vLLM fork, for NVIDIA DGX Spark / GB10. It is the arm64 counterpart to the official x86_64-only EAGLE-4 wheels.
 >
 > **Where to get it:** the wheel is attached to the **[latest GitHub Release](https://github.com/Bobbinetor/vllm-eagle4-aarch64-gb10/releases/latest)**, not committed to git (494 MB is above GitHub's 100 MB repository file limit). The release also carries `SHA256SUMS`, and a CI job re-downloads and verifies every published asset.
@@ -47,7 +45,22 @@ The DGX Spark is `aarch64` with a GB10 GPU (compute capability 12.1 / sm_121). T
 | [EAGLE-4 install docs](https://github.com/eagle-hq/EAGLE-4/blob/main/docs/install.md) | "Linux x86-64 and Python 3.12" |
 | **This repository** | **`linux_aarch64`, cp312, sm_121** |
 
-Stock aarch64 vLLM wheels also do not carry the EAGLE-4 hook surface. This repository is a source build of [`eagle-hq/vllm`](https://github.com/eagle-hq/vllm) at tag [`eagle/v0.1.0`](https://github.com/eagle-hq/vllm/releases/tag/eagle/v0.1.0) (commit [`3ba2380`](https://github.com/eagle-hq/vllm/commit/3ba23801e80d2a0d0a9af21ce94484aa2adb8795)), compiled with `TORCH_CUDA_ARCH_LIST=12.1a`, `MAX_JOBS=16`, and the exact flash-attention, CUTLASS, and DeepGEMM pins recorded in [the build document](docs/it/EAGLE4-BUILD.md).
+Stock aarch64 vLLM wheels also do not carry the EAGLE-4 hook surface. This repository is a source build of [`eagle-hq/vllm`](https://github.com/eagle-hq/vllm) at tag [`eagle/v0.1.0`](https://github.com/eagle-hq/vllm/releases/tag/eagle/v0.1.0) (commit [`3ba2380`](https://github.com/eagle-hq/vllm/commit/3ba23801e80d2a0d0a9af21ce94484aa2adb8795)), compiled with `TORCH_CUDA_ARCH_LIST=12.1a`, `MAX_JOBS=16`, and the exact flash-attention, CUTLASS, and DeepGEMM pins recorded in [the build document](docs/BUILD.md).
+
+**CUDA code, what the audit actually found.** The build was requested for
+sm_121 (`TORCH_CUDA_ARCH_LIST=12.1a`), but a cubin-level audit of the wheel did
+**not** find any native `sm_121` cubin strings. What it found instead:
+
+- some kernel extension fatbins carry cubins compiled for earlier arches
+  (`sm_75`, `sm_80`) — vLLM prebuilt kernels that predate GB10;
+- the main `_C_stable_libtorch` fatbin's first entry is `sm_120`;
+- extended linear binaries embed PTX.
+
+Same-major `sm_120` cubins run on sm_121 forward-compatibly, and embedded PTX
+is JIT-compiled for sm_121 at first load. That JIT is part of why the first
+start takes ~10–11 minutes. So: the wheel is **verified working on GB10/sm_121
+at runtime on the build machine**, and its GPU code is sm_120 cubins + PTX, not
+native sm_121 cubins. Details are in [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
 `eagle-harness` 0.1.4 accepts `vllm>=0.32.0rc1.dev283,!=0.32.0`, so this `+eagle.3` build passes the hook check. Upstream's current reference build is `+eagle.5` (`main 074c83a09a` + hooks and fixes). The hook contract is the same; if you need the exact `+eagle.5` reference, rebuild from that commit with the same recipe.
 
@@ -66,7 +79,7 @@ If you are on x86_64, use the official wheel. If you are on another ARM GPU (GH2
 | **vLLM** | `0.32.0rc1.dev283+eagle.3` |
 | **Built from** | `eagle-hq/vllm` @ `3ba23801e80d2a0d0a9af21ce94484aa2adb8795` (tag `eagle/v0.1.0`) |
 | **Base image** | `vllm/vllm-openai:latest` @ `sha256:c1c9f6fd5c109ba7f0546a59f5b2f15fb87f64c77782e90a27b648b42a8e67c3` |
-| **CUDA arch** | `12.1a` (sm_121, GB10) |
+| **CUDA arch** | requested `12.1a` (sm_121); audited GPU code: sm_120 cubins + PTX — see [the audit note](#cuda-code-what-the-audit-actually-found) |
 | **Python** | 3.12 |
 | **Harness** | `eagle-harness` 0.1.4 (installed separately from PyPI) |
 | **Target model** | [`nvidia/Qwen3.8-27B-NVFP4`](https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4) (~21 GB) |
@@ -164,8 +177,7 @@ Then:
 | `docs/TROUBLESHOOTING.md` | Every error encountered during the build, with fixes |
 | `docs/LICENSING.md` | Component licenses, trademark policy, commercial-use note |
 | `docs/releases/v0.1.0.md` | The release notes published on the GitHub Release page |
-| `docs/it/` | Original Italian build and usage documents, preserved for provenance |
-| `README.it.md` | Italian quick start |
+| `docs/BUILD.md` | The build record: exact pins, commands, and all seven build failures |
 | `CHANGELOG.md` | Build and version history |
 | `NOTICE`, `licenses/` | Attribution and third-party license texts |
 | `.github/` | CI, release automation, post-release asset verification, issue templates |
@@ -295,7 +307,7 @@ More detail, including the seven build failures and their fixes: [`docs/TROUBLES
 
 ## Reproduce the build
 
-The full recipe is in [`docs/it/EAGLE4-BUILD.md`](docs/it/EAGLE4-BUILD.md) (Italian, with the exact commands and errors) and [`build/build-eagle.sh`](build/build-eagle.sh). The pins:
+The full recipe is in [`docs/BUILD.md`](docs/BUILD.md) (with the exact commands and errors) and [`build/build-eagle.sh`](build/build-eagle.sh). The pins:
 
 | Dependency | Pin |
 |---|---|

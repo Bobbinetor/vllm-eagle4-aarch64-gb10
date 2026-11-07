@@ -1,6 +1,5 @@
-fbd7ec77a34f608b4158d7a7196f75a1f78100da3645825e0a30657f72408237  vllm-0.32.0rc1.dev283+eagle.3-cp312-cp312-linux_aarch64.whl
 1a15328ac876909c938a2fbad5e628baceb9c3913a5a3c8c6e1802e4d286f1a4  build/build-eagle.sh
-b5b607e75fd0b1f63ae5fd3a1f18045b5b116af180e8e8a659e758793b310ed7  docker/Dockerfile.eagle
 527fc14dcf9aa29f83279238d7e4197c98bdb41f2dfa4b07d3ea8bbb3ac37fc1  configs/qwen3.8-27b-eagle.yaml
-55d38bd1bab27f983b57f588d9dcd1d6efc014db64acd43bb0ec1ce1eee49160  docs/it/EAGLE4-BUILD.md
-d55f8ebb025741195330fbf2df16a7c15a27c9f26f9e496b32963a44aaddb963  docs/it/USO-WHEEL-EAGLE4.md
+b5b607e75fd0b1f63ae5fd3a1f18045b5b116af180e8e8a659e758793b310ed7  docker/Dockerfile.eagle
+dba1dd9750c6f6df0582d3b12ea6b1da86eeeb3a3d3ffb0d55198213f03dfb14  docs/BUILD.md
+fbd7ec77a34f608b4158d7a7196f75a1f78100da3645825e0a30657f72408237  vllm-0.32.0rc1.dev283+eagle.3-cp312-cp312-linux_aarch64.whl
